@@ -2,9 +2,92 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<title>Counter</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	Counter
+	<canvas id="counter"></canvas>
+	<script
+		src="https://code.jquery.com/jquery-3.1.1.min.js"
+		integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"
+		integrity="sha256-RASNMNlmRtIreeznffYMDUxBXcMRjijEaaGF/gxT6vw="
+		crossorigin="anonymous"></script>
+	<script>
+		$.ajax({
+			method: 'GET',
+			url: 'https://spreadsheets.google.com/feeds/list/1g8dNzN1taWRdxfC3DYlGbWRt6v0W_n6ZW2gs2RKaQsA/od6/public/values?alt=json',
+			dataType: 'json'
+		}).done(function(response) {
+
+			var ctx = 'counter';
+			var dates = [];
+			var counts = [];
+
+			// console.log(response.feed.entry);
+
+			response.feed.entry.forEach(function(row) {
+
+				dates.push(row.gsx$date.$t);
+				counts.push(row.gsx$count.$t);
+
+			});
+
+			new window.Chart(ctx, {
+				type: 'line',
+				data: {
+					// X axis
+					labels: dates,
+					datasets: [
+						{
+							label: '',
+							// Y axis
+							data: counts
+						}
+					]
+				},
+				options: {
+					layout: {
+						padding: 100
+					},
+					legend: {
+						display: false
+					},
+					tooltips: {
+						// intersect: false
+					},
+					scales: {
+						xAxes: [
+							{
+								type: 'time',
+								time: {
+									parser: 'MM-D-YYYY',
+									unit: 'day'
+								},
+								gridLines: {
+									drawTicks: false
+								}
+							}
+						],
+						yAxes: [
+							{
+								ticks: {
+									beginAtZero: true,
+									fixedStepSize: 1
+								},
+								gridLines: {
+									display: false
+								}
+							}
+						]
+					}
+				}
+			});
+
+		});
+	</script>
 </body>
 </html>
