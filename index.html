@@ -7,6 +7,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+	<select id="timeUnit">
+		<option value="day">day</option>
+		<option value="week">week</option>
+		<option value="month">month</option>
+		<option value="quarter">quarter</option>
+		<option value="year">year</option>
+	</select>
 	<canvas id="counter"></canvas>
 	<script
 		src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -17,13 +24,14 @@
 		integrity="sha256-RASNMNlmRtIreeznffYMDUxBXcMRjijEaaGF/gxT6vw="
 		crossorigin="anonymous"></script>
 	<script>
+		var counterChart;
+
 		$.ajax({
 			method: 'GET',
 			url: 'https://spreadsheets.google.com/feeds/list/1g8dNzN1taWRdxfC3DYlGbWRt6v0W_n6ZW2gs2RKaQsA/od6/public/values?alt=json',
 			dataType: 'json'
 		}).done(function(response) {
 
-			var ctx = 'counter';
 			var dates = [];
 			var counts = [];
 
@@ -36,7 +44,7 @@
 
 			});
 
-			new window.Chart(ctx, {
+			counterChart = new window.Chart('counter', {
 				type: 'line',
 				data: {
 					// X axis
@@ -51,7 +59,10 @@
 				},
 				options: {
 					layout: {
-						padding: 100
+						padding: {
+							// top: 100,
+							bottom: 100
+						}
 					},
 					legend: {
 						display: false
@@ -65,7 +76,10 @@
 								type: 'time',
 								time: {
 									parser: 'MM-D-YYYY',
-									unit: 'day'
+									unit: 'day',
+									displayFormats: {
+										day: 'dd M/D'
+									}
 								},
 								gridLines: {
 									drawTicks: false
@@ -86,6 +100,13 @@
 					}
 				}
 			});
+
+		});
+
+		$('#timeUnit').on('change', function() {
+
+			counterChart.options.scales.xAxes[0].time.unit = $(this).val();
+			counterChart.update();
 
 		});
 	</script>
